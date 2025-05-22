@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.cell.PropertyValueFactory?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17.0.6"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.example.debug.SymbolTableController">
+    <center>
+        <TableView fx:id="symbolTableView" style="-fx-background-insets: 0;">
+            <columns>
+                <TableColumn fx:id="nameColumn" prefWidth="150" text="名称">
+                    <cellValueFactory>
+                        <PropertyValueFactory property="name"/>
+                    </cellValueFactory>
+                </TableColumn>
+                <TableColumn fx:id="typeColumn" prefWidth="150" text="属性">
+                    <cellValueFactory>
+                        <PropertyValueFactory property="type"/>
+                    </cellValueFactory>
+                </TableColumn>
+                <TableColumn fx:id="lineColumn" prefWidth="80" text="行号">
+                    <cellValueFactory>
+                        <PropertyValueFactory property="line"/>
+                    </cellValueFactory>
+                </TableColumn>
+                <TableColumn fx:id="modifierColumn" prefWidth="150" text="类型">
+                    <cellValueFactory>
+                        <PropertyValueFactory property="modifier"/>
+                    </cellValueFactory>
+                </TableColumn>
+                <TableColumn fx:id="valueColumn" prefWidth="200" text="值">
+                    <cellValueFactory>
+                        <PropertyValueFactory property="value"/>
+                    </cellValueFactory>
+                </TableColumn>
+                <TableColumn fx:id="returnTypeColumn" prefWidth="150" text="返回类型">
+                    <cellValueFactory>
+                        <PropertyValueFactory property="returnType"/>
+                    </cellValueFactory>
+                </TableColumn>
+                <TableColumn fx:id="scopeColumn" prefWidth="200" text="作用域">
+                    <cellValueFactory>
+                        <PropertyValueFactory property="scope"/>
+                    </cellValueFactory>
+                </TableColumn>
+                <TableColumn fx:id="parametersColumn" prefWidth="300" text="参数">
+                    <cellValueFactory>
+                        <PropertyValueFactory property="parameters"/>
+                    </cellValueFactory>
+                </TableColumn>
+            </columns>
+        </TableView>
+    </center>
+</BorderPane>

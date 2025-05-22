@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17.0.6"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.example.debug.ASTViewController"
+            style="-fx-padding: 10;">
+
+    <top>
+        <Label text="抽象语法树 (AST)"
+               style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-padding: 0 0 10 0;"/>
+    </top>
+
+    <center>
+        <TreeView fx:id="astTree"
+                  style="-fx-font-family: 'Consolas'; -fx-font-size: 12pt;"/>
+    </center>
+
+    <bottom>
+        <HBox spacing="10" style="-fx-padding: 10 0 0 0;">
+            <Button text="导出为图片" onAction="#handleExportImage"/>
+            <Button text="关闭" onAction="#handleClose"/>
+        </HBox>
+    </bottom>
+</BorderPane>

@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.geometry.Insets?>
+
+<?import javafx.scene.control.cell.PropertyValueFactory?>
+<BorderPane xmlns="http://javafx.com/javafx/17.0.6"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.example.debug.MainController"
+            style="-fx-background-color: #f0f0f0;">
+
+    <!-- 顶部菜单栏 -->
+    <top>
+        <MenuBar maxWidth="Infinity" style="-fx-background-color: #e0e0e0;">
+            <menus>
+                <!-- 文件菜单 -->
+                <Menu text="文件(_F)">
+                    <items>
+                        <MenuItem text="新建(_N)" onAction="#handleNew" accelerator="Shortcut+N"/>
+                        <MenuItem text="打开(_O)" onAction="#handleOpen" accelerator="Shortcut+O"/>
+                        <MenuItem text="保存(_S)" onAction="#handleSave" accelerator="Shortcut+S"/>
+                        <MenuItem text="另存为(_A)..." onAction="#handleSaveAs"/>
+                        <SeparatorMenuItem />
+                        <MenuItem text="退出(_X)" onAction="#handleExit" accelerator="Shortcut+Q"/>
+                    </items>
+                </Menu>
+
+                <!-- 编辑菜单 -->
+                <Menu text="编辑(_E)">
+                    <items>
+                        <MenuItem text="撤销(_Z)" onAction="#handleUndo" accelerator="Shortcut+Z"/>
+                        <SeparatorMenuItem />
+                        <MenuItem text="剪切(_T)" onAction="#handleCut" accelerator="Shortcut+X"/>
+                        <MenuItem text="复制(_C)" onAction="#handleCopy" accelerator="Shortcut+C"/>
+                        <MenuItem text="粘贴(_P)" onAction="#handlePaste" accelerator="Shortcut+V"/>
+                        <MenuItem text="删除(_D)" onAction="#handleDelete" accelerator="Delete"/>
+                    </items>
+                </Menu>
+
+                <!-- 编译流程菜单 -->
+                <Menu text="编译流程">
+                    <items>
+                        <Menu text="词法分析">
+                            <items>
+                                <MenuItem text="执行分析" onAction="#handleLexicalAnalysis"/>
+                            </items>
+                        </Menu>
+                        <Menu text="语法分析">
+                            <items>
+                                <MenuItem text="生成AST" onAction="#generateAST"/>
+                            </items>
+                        </Menu>
+                        <Menu text="符号表">
+                            <items>
+                                <MenuItem text="查看符号表" onAction="#showSymbolTable"/>
+                            </items>
+                        </Menu>
+                        <Menu text="中间代码">
+                            <items>
+                                <MenuItem text="生成IR" onAction="#generateIR"/>
+                            </items>
+                        </Menu>
+                        <Menu text="目标代码">
+                            <items>
+                                <MenuItem text="生成汇编" onAction="#generateAssembly"/>
+                            </items>
+                        </Menu>
+                    </items>
+                </Menu>
+
+                <!-- 帮助菜单 -->
+                <Menu text="帮助(_H)" style="-fx-alignment: center-right;">
+                    <items>
+                        <MenuItem text="用户手册" onAction="#showUserManual"/>
+                        <MenuItem text="检查更新" onAction="#checkUpdates"/>
+                        <SeparatorMenuItem />
+                        <MenuItem text="关于..." onAction="#showAbout"/>
+                    </items>
+                </Menu>
+            </menus>
+        </MenuBar>
+    </top>
+
+    <!-- 主界面 -->
+    <center>
+        <BorderPane style="-fx-padding: 20;">
+            <center>
+                <SplitPane dividerPositions="0.2, 0.7" orientation="VERTICAL">
+                    <items>
+                        <SplitPane dividerPositions="0.2">
+                            <items>
+                                <!-- 项目结构树 -->
+                                <AnchorPane minWidth="150">
+                                    <VBox spacing="10" AnchorPane.topAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0">
+                                        <Label text="项目结构" style="-fx-font-weight: bold; -fx-padding: 8px;"/>
+                                        <TreeView fx:id="projectTree" style="-fx-background-insets: 0; -fx-border-width: 0;">
+                                            <root>
+                                                <TreeItem value="项目根目录" expanded="true">
+                                                    <children>
+                                                        <TreeItem value="src"/>
+                                                        <TreeItem value="libs"/>
+                                                        <TreeItem value="docs"/>
+                                                    </children>
+                                                </TreeItem>
+                                            </root>
+                                        </TreeView>
+                                    </VBox>
+                                </AnchorPane>
+
+                                <!-- 代码编辑区 -->
+                                <TabPane fx:id="codeTabs" tabClosingPolicy="UNAVAILABLE">
+                                    <tabs>
+                                        <Tab text="Main.java">
+                                            <content>
+                                                <AnchorPane>
+                                                    <TextArea fx:id="codeArea" style="-fx-font-family: 'Consolas'; -fx-font-size: 12pt;"
+                                                              wrapText="false"
+                                                              AnchorPane.topAnchor="0"
+                                                              AnchorPane.bottomAnchor="0"
+                                                              AnchorPane.leftAnchor="0"
+                                                              AnchorPane.rightAnchor="0"/>
+                                                </AnchorPane>
+                                            </content>
+                                        </Tab>
+                                    </tabs>
+                                </TabPane>
+                            </items>
+                        </SplitPane>
+
+                        <!-- 错误信息面板 -->
+                        <VBox style="-fx-border-color: #ddd; -fx-border-width: 1px 0 0 0;">
+                            <Label text="错误信息" style="-fx-font-weight: bold; -fx-padding: 8px;"/>
+                            <TableView fx:id="errorTable" style="-fx-background-insets: 0;">
+                                <columns>
+                                    <TableColumn fx:id="lineColumn" prefWidth="60" text="行号">
+                                        <cellValueFactory>
+                                            <PropertyValueFactory property="lineNumber"/>
+                                        </cellValueFactory>
+                                    </TableColumn>
+                                    <TableColumn fx:id="typeColumn" prefWidth="150" text="类型">
+                                        <cellValueFactory>
+                                            <PropertyValueFactory property="errorType"/>
+                                        </cellValueFactory>
+                                    </TableColumn>
+                                    <TableColumn fx:id="descColumn" prefWidth="1200" text="描述">
+                                        <cellValueFactory>
+                                            <PropertyValueFactory property="description"/>
+                                        </cellValueFactory>
+                                    </TableColumn>
+                                </columns>
+                            </TableView>
+                        </VBox>
+                    </items>
+                </SplitPane>
+            </center>
+        </BorderPane>
+    </center>
+
+    <!-- 状态栏 -->
+    <bottom>
+        <HBox style="-fx-background-color: #e0e0e0; -fx-padding: 5 10;">
+            <Label fx:id="statusLabel" text="就绪" style="-fx-text-fill: #444;"/>
+        </HBox>
+    </bottom>
+</BorderPane>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<?import javafx.scene.control.cell.PropertyValueFactory?>
+<BorderPane xmlns="http://javafx.com/javafx/17.0.6" xmlns:fx="http://javafx.com/fxml/1"  fx:controller="com.example.debug.IRResultController">
+    <center>
+        <TableView fx:id="irTable" style="-fx-background-insets: 0;">
+            <columns>
+                <TableColumn fx:id="opColumn" prefWidth="100" text="操作符">
+                    <cellValueFactory>
+                        <PropertyValueFactory property="op"/>
+                    </cellValueFactory>
+                </TableColumn>
+                <TableColumn fx:id="arg1Column" prefWidth="100" text="参数1">
+                    <cellValueFactory>
+                        <PropertyValueFactory property="arg1"/>
+                    </cellValueFactory>
+                </TableColumn>
+                <TableColumn fx:id="arg2Column" prefWidth="100" text="参数2">
+                    <cellValueFactory>
+                        <PropertyValueFactory property="arg2"/>
+                    </cellValueFactory>
+                </TableColumn>
+                <TableColumn fx:id="resultColumn" prefWidth="100" text="结果">
+                    <cellValueFactory>
+                        <PropertyValueFactory property="result"/>
+                    </cellValueFactory>
+                </TableColumn>
+            </columns>
+        </TableView>
+    </center>
+</BorderPane>
