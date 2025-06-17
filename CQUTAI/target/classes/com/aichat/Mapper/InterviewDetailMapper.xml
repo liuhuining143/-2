@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aichat.Mapper.InterviewDetailMapper">
+
+    <resultMap id="InterviewDetailMap" type="com.aichat.Model.InterviewDetail">
+        <id property="id" column="id"/>
+        <result property="interviewId" column="interview_id"/>
+        <result property="question" column="question"/>
+        <result property="answer" column="answer"/>
+        <result property="analysis" column="analysis"/>
+        <result property="dimensionScore" column="dimension_score"/>
+        <result property="dimensionScores" column="dimension_scores" typeHandler="com.aichat.Handler.JsonTypeHandler"/>
+        <result property="responseDuration" column="response_duration"/>
+        <result property="createdAt" column="created_at"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="com.aichat.Model.InterviewDetail"
+            useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO interview_details(
+            interview_id, question, question_type
+        ) VALUES (
+                     #{interviewId}, #{question}, #{questionType}
+                 )
+    </insert>
+
+    <update id="updateAnswer">
+        UPDATE interview_details
+        SET answer = #{answer}
+        WHERE id = #{id}
+    </update>
+
+    <update id="updateAnalysis">
+        UPDATE interview_details
+        SET analysis = #{analysis}
+        WHERE id = #{id}
+    </update>
+
+    <update id="updateDimensionScores">
+        UPDATE interview_details
+        SET dimension_scores = #{dimensionScores, typeHandler=com.aichat.Handler.JsonTypeHandler}
+        WHERE id = #{id}
+    </update>
+
+    <select id="selectById" resultMap="InterviewDetailMap">
+        SELECT * FROM interview_details WHERE id = #{id}
+    </select>
+
+    <select id="selectByInterviewId" resultMap="InterviewDetailMap">
+        SELECT * FROM interview_details
+        WHERE interview_id = #{interviewId}
+        ORDER BY created_at
+    </select>
+</mapper>

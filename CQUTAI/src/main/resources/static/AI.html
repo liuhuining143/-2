@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>AI 智能面试系统</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+
+
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: "Segoe UI", sans-serif;
+        }
+
+        body {
+            margin: 0;
+            background: #f5f7fa;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        input, button {
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+
+        button {
+            background-color: #3498db;
+            color: white;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        .question {
+            background: #ecf0f1;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .answer-box {
+            margin-top: 15px;
+        }
+
+        .analysis {
+            background: #d5f5e3;
+            padding: 10px;
+            border-left: 4px solid #27ae60;
+            margin-top: 10px;
+        }
+
+        .report {
+            margin-top: 30px;
+            background: #fff9e6;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #f1c40f;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+    <div class="container">
+        <h1>AI 面试官</h1>
+
+        <!-- 开始面试表单 -->
+        <form @submit.prevent="startInterview">
+            <input type="number" v-model.number="userId" placeholder="用户 ID" required>
+            <input type="number" v-model.number="jobId" placeholder="职位 ID" required>
+            <input type="number" v-model.number="companyId" placeholder="公司 ID" required>
+            <button type="submit">开始面试</button>
+        </form>
+
+        <!-- 面试进行中 -->
+        <div v-if="interviewSession" class="question">
+            <p><strong>当前问题：</strong>{{ interviewSession.question }}</p>
+            <div class="answer-box">
+                <textarea v-model="userAnswer" placeholder="请输入你的回答..." rows="5"></textarea>
+                <button @click="submitAnswer" style="margin-top:10px;">提交回答</button>
+            </div>
+
+            <div v-if="interviewResponse" class="analysis">
+                <strong>AI 分析：</strong>
+                <p>{{ interviewResponse.analysis }}</p>
+                <strong>评分维度：</strong>
+                <ul>
+                    <li v-for="(score, key) in interviewResponse.dimensionScores" :key="key">
+                        {{ key }}：{{ score }}
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 结束面试按钮 -->
+        <div v-if="interviewSession && !report" style="text-align:center;">
+            <button @click="endInterview">结束面试并获取报告</button>
+        </div>
+
+        <!-- 报告展示 -->
+        <div v-if="report" class="report">
+            <h2>面试报告</h2>
+            <pre style="white-space: pre-wrap;">{{ report.evaluationReport }}</pre>
+            <h3>总分：{{ report.totalScore }}</h3>
+            <h4>改进建议：</h4>
+            <p>{{ report.improvementSuggestions }}</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    const { createApp } = Vue;
+
+    createApp({
+        data() {
+            return {
+                userId: null,
+                jobId: null,
+                companyId: null,
+                userAnswer: '',
+                interviewSession: null,
+                interviewResponse: null,
+                report: null
+            };
+        },
+        methods: {
+            async startInterview() {
+                const res = await fetch('/interview/start', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        userId: this.userId,
+                        jobId: this.jobId,
+                        companyId: this.companyId
+                    })
+                });
+                this.interviewSession = await res.json();
+                this.interviewResponse = null;
+                this.report = null;
+            },
+
+            async submitAnswer() {
+                const answer = {
+                    interviewId: this.interviewSession.interviewId,
+                    questionId: this.interviewSession.questionId,
+                    answer: this.userAnswer
+                };
+
+                const res = await fetch('/interview/submit-answer', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(answer)
+                });
+
+                this.interviewResponse = await res.json();
+                // 👇 打印 InterviewResponse 到控制台
+                console.log('InterviewResponse:', this.interviewResponse);
+
+                this.userAnswer = '';
+            },
+
+            async endInterview() {
+                const res = await fetch(`/interview/end?interviewId=${this.interviewSession.interviewId}`, {
+                    method: 'POST'
+                });
+                this.report = await res.json();
+            }
+        }
+    }).mount('#app');
+</script>
+</body>
+</html>

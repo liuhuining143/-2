@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>知识库文件上传</title>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/element-plus/dist/index.css" />
+  <script src="https://unpkg.com/element-plus"></script>
+  <style>
+    body {
+      padding: 40px;
+      font-family: Arial, sans-serif;
+    }
+    .upload-container {
+      max-width: 600px;
+      margin: auto;
+    }
+  </style>
+</head>
+<body>
+<div id="app">
+  <div class="upload-container">
+    <h2>📄 知识库文件上传测试</h2>
+    <el-upload
+            action="/ai/upload"
+            :show-file-list="true"
+            :auto-upload="true"
+            :on-success="handleSuccess"
+            :on-error="handleError"
+            :before-upload="beforeUpload"
+            name="file"
+            accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.ppt,.pptx,.md,.log,.html,.xml"
+    >
+      <el-button type="primary">选择文件</el-button>
+      <template #tip>
+        <div class="el-upload__tip">支持格式：PDF、Word、Excel、TXT、PPT、Markdown、HTML、XML</div>
+      </template>
+    </el-upload>
+
+    <div v-if="responseMessage" style="margin-top: 20px;">
+      <el-alert
+              :title="responseMessage"
+              type="success"
+              v-if="success"
+              show-icon
+      ></el-alert>
+      <el-alert
+              :title="responseMessage"
+              type="error"
+              v-else
+              show-icon
+      ></el-alert>
+    </div>
+  </div>
+</div>
+
+<script>
+  const { createApp } = Vue;
+
+  createApp({
+    data() {
+      return {
+        responseMessage: '',
+        success: false
+      };
+    },
+    methods: {
+      beforeUpload(file) {
+        const validTypes = [
+          'application/pdf',
+          'application/msword',
+          'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+          'application/vnd.ms-excel',
+          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+          'text/plain',
+          'application/vnd.ms-powerpoint',
+          'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+          'text/markdown',
+          'text/html',
+          'application/xml'
+        ];
+
+        const isValidType = validTypes.includes(file.type);
+        if (!isValidType) {
+          this.responseMessage = '不支持的文件类型';
+          this.success = false;
+        }
+
+        const isValidSize = file.size / 1024 / 1024 < 10; // 限制 10MB
+        if (!isValidSize) {
+          this.responseMessage = '文件大小不能超过 10MB';
+          this.success = false;
+        }
+
+        return isValidType && isValidSize;
+      },
+      handleSuccess(response) {
+        this.responseMessage = response;
+        this.success = true;
+      },
+      handleError(error) {
+        this.responseMessage = error.message || '上传失败';
+        this.success = false;
+      }
+    }
+  }).use(ElementPlus).mount('#app');
+</script>
+</body>
+</html>

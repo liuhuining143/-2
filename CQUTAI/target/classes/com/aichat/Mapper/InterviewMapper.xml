@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aichat.Mapper.InterviewMapper">
+
+    <resultMap id="InterviewMap" type="com.aichat.Model.Interview">
+        <id property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="jobId" column="job_id"/>
+        <result property="companyId" column="company_id"/>
+        <result property="interviewerId" column="interviewer_id"/>
+        <result property="status" column="status"/>
+        <result property="startTime" column="start_time"/>
+        <result property="endTime" column="end_time"/>
+        <result property="aiAnalysis" column="ai_analysis"/>
+        <result property="videoUrl" column="video_url"/>
+        <result property="score" column="score"/>
+        <result property="aiModelVersion" column="ai_model_version"/>
+        <result property="audioUrl" column="audio_url"/>
+        <result property="createdAt" column="created_at"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="com.aichat.Model.Interview"
+            useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO interviews(
+            user_id, job_id, company_id, start_time, status, ai_model_version
+        ) VALUES (
+                     #{userId}, #{jobId}, #{companyId}, #{startTime}, #{status}, #{aiModelVersion}
+                 )
+    </insert>
+
+    <update id="update" parameterType="com.aichat.Model.Interview">
+        UPDATE interviews
+        SET end_time = #{endTime}, status = #{status}
+        WHERE id = #{id}
+    </update>
+
+    <select id="selectById" resultMap="InterviewMap">
+        SELECT * FROM interviews WHERE id = #{id}
+    </select>
+</mapper>
